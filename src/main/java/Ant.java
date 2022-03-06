@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import static java.math.RoundingMode.HALF_DOWN;
 
-public record Ant(BigDecimal position, Boolean direction) {
+public record Ant(BigDecimal position, Boolean facingRight) {
     static List<Ant> ants = new ArrayList<>();
 
     //time in ms
@@ -38,7 +38,7 @@ public record Ant(BigDecimal position, Boolean direction) {
             String s = String.valueOf(pos100);
             int roundPos = Integer.parseInt(s.substring(0, s.indexOf(".")));
 //            logger.debug("position = " + ant.position + " ROUNDPOS= " + roundPos + " antSize" + ants.size());
-            output[roundPos] = ant.direction ? ">" : "<";
+            output[roundPos] = ant.facingRight ? ">" : "<";
         }
         for (int i = 0; i < 100; i++) {
             System.out.print(output[i]);
@@ -52,18 +52,18 @@ public record Ant(BigDecimal position, Boolean direction) {
 
 
     //1m Rod is divided in 100 spaces marked with dot for empty, < for ant going left and > for ant going right
+    //for simplicity speed=1 therefore ignored in the update position calculation
     private static void updateAnts(){
         for (Ant ant : ants) {
             var antPos = ant.position;
-            var newPos = ant.direction ? antPos.add(time) : antPos.subtract(time);
+            var newPos = ant.facingRight ? antPos.add(time) : antPos.subtract(time);
             if (newPos.compareTo(BigDecimal.ZERO) < 0 || newPos.compareTo(BigDecimal.ONE) > 0) {
-                output[ants.indexOf(ant)] = ".";
                 ants.remove(ant);
                 //System.out.println("Removed one ant " + ants.size());
             } else {
                 //System.out.println("ant updated");
                 ants.remove(ant);
-                ants.add(new Ant(newPos, ant.direction));
+                ants.add(new Ant(newPos, ant.facingRight));
                 reverseDirectionIfCollisionOccurs(ant);
             }
             break;
@@ -83,12 +83,12 @@ public record Ant(BigDecimal position, Boolean direction) {
 
     private static void reverseDirectionIfCollisionOccurs(Ant a) {
         for (int i = 0; i < ants.size(); i++) {
-            if (a.direction.equals(ants.get(i).direction)) {
+            if (a.facingRight.equals(ants.get(i).facingRight)&&(!a.equals(ants.get(i)))) {
                 ants.remove(a);
-                ants.add(new Ant(a.position, !a.direction));
+                ants.add(new Ant(a.position, !a.facingRight));
 
                 ants.remove(i);
-                ants.set(i, new Ant(ants.get(i).position, !ants.get(i).direction));
+                ants.set(i, new Ant(ants.get(i).position, !ants.get(i).facingRight));
                 break;
             }
         }
