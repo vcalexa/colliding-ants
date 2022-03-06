@@ -79,15 +79,22 @@ public record Ant(BigDecimal position, Boolean facingRight) {
 
     private static void reverseDirectionIfCollisionOccurs(Ant a) {
         for (int i = 0; i < ants.size(); i++) {
-            if (a.position.equals(ants.get(i).position) && (!a.equals(ants.get(i)))) {
+            boolean samePosition = a.position.equals(ants.get(i).position);
+            boolean willIntersectOnNextIncrement = (a.position.subtract(ants.get(i).position)).equals(BigDecimal.valueOf(0.001))
+                    &&(a.facingRight!=ants.get(i).facingRight);
+            if (samePosition || (willIntersectOnNextIncrement&&facingEachOther(a, ants.get(i))) && (!a.equals(ants.get(i)))) {
                 ants.remove(a);
-                ants.add(new Ant(a.position, !a.facingRight));
+                ants.add(new Ant(a.position.add(BigDecimal.valueOf(0.001)), !a.facingRight));
 
                 ants.remove(i);
                 ants.set(i, new Ant(ants.get(i).position, !ants.get(i).facingRight));
                 break;
             }
         }
+    }
+    private static boolean facingEachOther(Ant a, Ant b){
+        return (a.facingRight && !b.facingRight)&&(a.position.compareTo(b.position) < 0) ||
+                (!a.facingRight && b.facingRight)&&(a.position.compareTo(b.position) > 0);
     }
 
 }
