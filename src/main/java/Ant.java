@@ -15,6 +15,7 @@ public record Ant(BigDecimal position, Boolean facingRight) {
     static BigDecimal time = BigDecimal.valueOf(0.000);
     static String[] output = new String[101];
     static Logger logger = LogManager.getLogger(Ant.class);
+
     public static void main(String[] args) {
 
         //initialize ants state
@@ -23,15 +24,18 @@ public record Ant(BigDecimal position, Boolean facingRight) {
         }
         initializeOutput();
 
-        while (someAntsLeft()) {
+        while (ants.size() > 0) {
             updateAndDisplayOutput();
+
             //increment time by 1ms
             time = time.add(BigDecimal.valueOf(0.001));
             updateAnts();
             System.out.println(time);
         }
     }
-    private static void updateAndDisplayOutput(){
+
+    private static void updateAndDisplayOutput() {
+        initializeOutput();
         for (Ant ant : ants) {
             BigDecimal antPos = ant.position.setScale(3, HALF_DOWN);
             var pos100 = antPos.multiply(BigDecimal.valueOf(100)).setScale(3, RoundingMode.HALF_UP);
@@ -44,7 +48,8 @@ public record Ant(BigDecimal position, Boolean facingRight) {
             System.out.print(output[i]);
         }
     }
-    private static void initializeOutput(){
+
+    private static void initializeOutput() {
         for (int i = 0; i < 101; i++) {
             output[i] = ".";
         }
@@ -53,7 +58,7 @@ public record Ant(BigDecimal position, Boolean facingRight) {
 
     //1m Rod is divided in 100 spaces marked with dot for empty, < for ant going left and > for ant going right
     //for simplicity speed=1 therefore ignored in the update position calculation
-    private static void updateAnts(){
+    private static void updateAnts() {
         for (Ant ant : ants) {
             var antPos = ant.position;
             var newPos = ant.facingRight ? antPos.add(time) : antPos.subtract(time);
@@ -70,20 +75,9 @@ public record Ant(BigDecimal position, Boolean facingRight) {
         }
     }
 
-    private static boolean someAntsLeft() {
-        boolean someAnts = false;
-        for (Ant ant : ants) {
-            if (ant.position.compareTo(BigDecimal.ZERO) > 0 && ant.position.compareTo(BigDecimal.ONE) < 0) {
-                someAnts = true;
-                break;
-            }
-        }
-        return someAnts;
-    }
-
     private static void reverseDirectionIfCollisionOccurs(Ant a) {
         for (int i = 0; i < ants.size(); i++) {
-            if (a.facingRight.equals(ants.get(i).facingRight)&&(!a.equals(ants.get(i)))) {
+            if (a.facingRight.equals(ants.get(i).facingRight) && (!a.equals(ants.get(i)))) {
                 ants.remove(a);
                 ants.add(new Ant(a.position, !a.facingRight));
 
