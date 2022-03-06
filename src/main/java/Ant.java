@@ -21,10 +21,7 @@ public record Ant(BigDecimal position, Boolean direction) {
         for (int i = 0; i < 24; i++) {
             ants.add(new Ant(BigDecimal.valueOf(Math.random()).setScale(3, HALF_DOWN), Math.random() > 0.5));
         }
-
-        for (int i = 0; i < 101; i++) {
-            output[i] = ".";
-        }
+        initializeOutput();
 
         while (someAntsLeft()) {
             updateAndDisplayOutput();
@@ -47,9 +44,14 @@ public record Ant(BigDecimal position, Boolean direction) {
             System.out.print(output[i]);
         }
     }
+    private static void initializeOutput(){
+        for (int i = 0; i < 101; i++) {
+            output[i] = ".";
+        }
+    }
 
 
-    //1m Rod is dividedin 100 spaces
+    //1m Rod is divided in 100 spaces marked with dot for empty, < for ant going left and > for ant going right
     private static void updateAnts(){
         for (Ant ant : ants) {
             var antPos = ant.position;
