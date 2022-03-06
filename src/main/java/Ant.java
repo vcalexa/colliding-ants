@@ -79,7 +79,7 @@ public record Ant(BigDecimal position, Boolean facingRight) {
 
     private static void reverseDirectionIfCollisionOccurs(Ant a) {
         for (int i = 0; i < ants.size(); i++) {
-            if (a.facingRight.equals(ants.get(i).facingRight) && (!a.equals(ants.get(i)))) {
+            if (a.position.equals(ants.get(i).position) && (!a.equals(ants.get(i)))) {
                 ants.remove(a);
                 ants.add(new Ant(a.position, !a.facingRight));
 
