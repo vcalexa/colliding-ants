@@ -16,7 +16,7 @@ public record Ant(BigDecimal position, Boolean facingRight) {
     static String[] output = new String[101];
     static Logger logger = LogManager.getLogger(Ant.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         //initialize ants state
         for (int i = 0; i < 24; i++) {
@@ -29,10 +29,11 @@ public record Ant(BigDecimal position, Boolean facingRight) {
 
             //increment time by 1ms
             time = time.add(BigDecimal.valueOf(0.001));
+            Thread.sleep(100);
             updateAnts();
         }
         //time in seconds
-        System.out.println(time.multiply(BigDecimal.valueOf(100))+ " seconds");
+        System.out.println(time.multiply(BigDecimal.valueOf(100)) + " seconds");
     }
 
     private static void updateAndDisplayOutput() {
@@ -80,9 +81,10 @@ public record Ant(BigDecimal position, Boolean facingRight) {
     private static void reverseDirectionIfCollisionOccurs(Ant a) {
         for (int i = 0; i < ants.size(); i++) {
             boolean samePosition = a.position.equals(ants.get(i).position);
-            boolean willIntersectOnNextIncrement = (a.position.subtract(ants.get(i).position)).equals(BigDecimal.valueOf(0.001))
-                    &&(a.facingRight!=ants.get(i).facingRight);
-            if (samePosition || (willIntersectOnNextIncrement&&facingEachOther(a, ants.get(i))) && (!a.equals(ants.get(i)))) {
+            boolean willIntersectOnNextIncrement = ((a.position.subtract(ants.get(i).position)).equals(BigDecimal.valueOf(0.001))
+                    || (a.position.subtract(ants.get(i).position)).equals(BigDecimal.valueOf(-0.001))
+                    && (a.facingRight != ants.get(i).facingRight));
+            if (samePosition || (willIntersectOnNextIncrement && facingEachOther(a, ants.get(i))) && (!a.equals(ants.get(i)))) {
                 ants.remove(a);
                 ants.add(new Ant(a.position.add(BigDecimal.valueOf(0.001)), !a.facingRight));
 
@@ -92,9 +94,10 @@ public record Ant(BigDecimal position, Boolean facingRight) {
             }
         }
     }
-    private static boolean facingEachOther(Ant a, Ant b){
-        return (a.facingRight && !b.facingRight)&&(a.position.compareTo(b.position) < 0) ||
-                (!a.facingRight && b.facingRight)&&(a.position.compareTo(b.position) > 0);
+
+    private static boolean facingEachOther(Ant a, Ant b) {
+        return (a.facingRight && !b.facingRight) && (a.position.compareTo(b.position) < 0) ||
+                (!a.facingRight && b.facingRight) && (a.position.compareTo(b.position) > 0);
     }
 
 }
