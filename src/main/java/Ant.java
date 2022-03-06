@@ -30,8 +30,9 @@ public record Ant(BigDecimal position, Boolean facingRight) {
             //increment time by 1ms
             time = time.add(BigDecimal.valueOf(0.001));
             updateAnts();
-            System.out.println(time);
         }
+        //time in seconds
+        System.out.println(time.multiply(BigDecimal.valueOf(100))+ " seconds");
     }
 
     private static void updateAndDisplayOutput() {
@@ -41,12 +42,13 @@ public record Ant(BigDecimal position, Boolean facingRight) {
             var pos100 = antPos.multiply(BigDecimal.valueOf(100)).setScale(3, RoundingMode.HALF_UP);
             String s = String.valueOf(pos100);
             int roundPos = Integer.parseInt(s.substring(0, s.indexOf(".")));
-//            logger.debug("position = " + ant.position + " ROUNDPOS= " + roundPos + " antSize" + ants.size());
+            logger.debug("position = " + ant.position + " ROUNDPOS= " + roundPos + " antSize" + ants.size());
             output[roundPos] = ant.facingRight ? ">" : "<";
         }
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 101; i++) {
             System.out.print(output[i]);
         }
+        System.out.println();
     }
 
     private static void initializeOutput() {
