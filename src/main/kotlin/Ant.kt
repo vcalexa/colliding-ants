@@ -28,15 +28,12 @@ fun updateAnt() {
             willBeRemovedList.add(ants[i])
         }
         for((j, otherAnt) in ants.withIndex()){
-            if (ant.position ==otherAnt.position &&(i!=j)){
+            if (newPosition ==otherAnt.position && (ant.facingRight!=otherAnt.facingRight)){
                 ants[j]=Ant(otherAnt.position, !otherAnt.facingRight)
                 ants[i]=Ant(ant.position, !ant.facingRight)
                 collisions++
             }
         }
-
     }
     ants.removeAll { willBeRemovedList.contains(it) }
 }
-
-
