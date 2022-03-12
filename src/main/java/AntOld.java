@@ -8,19 +8,19 @@ import org.apache.logging.log4j.Logger;
 
 import static java.math.RoundingMode.HALF_DOWN;
 
-public record Ant(BigDecimal position, Boolean facingRight) {
-    static List<Ant> ants = new ArrayList<>();
+public record AntOld(BigDecimal position, Boolean facingRight) {
+    static List<AntOld> ants = new ArrayList<>();
 
     //time in ms
     static BigDecimal time = BigDecimal.valueOf(0.000);
     static String[] output = new String[101];
-    static Logger logger = LogManager.getLogger(Ant.class);
+    static Logger logger = LogManager.getLogger(AntOld.class);
 
     public static void main(String[] args) throws InterruptedException {
 
         //initialize ants state
         for (int i = 0; i < 24; i++) {
-            ants.add(new Ant(BigDecimal.valueOf(Math.random()).setScale(3, HALF_DOWN), Math.random() > 0.5));
+            ants.add(new AntOld(BigDecimal.valueOf(Math.random()).setScale(3, HALF_DOWN), Math.random() > 0.5));
         }
         initializeOutput();
 
@@ -38,7 +38,7 @@ public record Ant(BigDecimal position, Boolean facingRight) {
 
     private static void updateAndDisplayOutput() {
         initializeOutput();
-        for (Ant ant : ants) {
+        for (AntOld ant : ants) {
             BigDecimal antPos = ant.position.setScale(3, HALF_DOWN);
             var pos100 = antPos.multiply(BigDecimal.valueOf(100)).setScale(3, RoundingMode.HALF_UP);
             String s = String.valueOf(pos100);
@@ -62,7 +62,7 @@ public record Ant(BigDecimal position, Boolean facingRight) {
     //1m Rod is divided in 100 spaces marked with dot for empty, < for ant going left and > for ant going right
     //for simplicity speed=1 therefore ignored in the update position calculation
     private static void updateAnts() {
-        for (Ant ant : ants) {
+        for (AntOld ant : ants) {
             var antPos = ant.position;
             var newPos = ant.facingRight ? antPos.add(time) : antPos.subtract(time);
             if (newPos.compareTo(BigDecimal.ZERO) < 0 || newPos.compareTo(BigDecimal.ONE) > 0) {
@@ -71,14 +71,14 @@ public record Ant(BigDecimal position, Boolean facingRight) {
             } else {
                 //System.out.println("ant updated");
                 ants.remove(ant);
-                ants.add(new Ant(newPos, ant.facingRight));
+                ants.add(new AntOld(newPos, ant.facingRight));
                 reverseDirectionIfCollisionOccurs(ant);
             }
             break;
         }
     }
 
-    private static void reverseDirectionIfCollisionOccurs(Ant a) {
+    private static void reverseDirectionIfCollisionOccurs(AntOld a) {
         for (int i = 0; i < ants.size(); i++) {
             boolean samePosition = a.position.equals(ants.get(i).position);
             boolean willIntersectOnNextIncrement = ((a.position.subtract(ants.get(i).position)).equals(BigDecimal.valueOf(0.001))
@@ -86,16 +86,16 @@ public record Ant(BigDecimal position, Boolean facingRight) {
                     && (a.facingRight != ants.get(i).facingRight));
             if (samePosition || (willIntersectOnNextIncrement && facingEachOther(a, ants.get(i))) && (!a.equals(ants.get(i)))) {
                 ants.remove(a);
-                ants.add(new Ant(a.position.add(BigDecimal.valueOf(0.001)), !a.facingRight));
+                ants.add(new AntOld(a.position.add(BigDecimal.valueOf(0.001)), !a.facingRight));
 
                 ants.remove(i);
-                ants.set(i, new Ant(ants.get(i).position, !ants.get(i).facingRight));
+                ants.set(i, new AntOld(ants.get(i).position, !ants.get(i).facingRight));
                 break;
             }
         }
     }
 
-    private static boolean facingEachOther(Ant a, Ant b) {
+    private static boolean facingEachOther(AntOld a, AntOld b) {
         return (a.facingRight && !b.facingRight) && (a.position.compareTo(b.position) < 0) ||
                 (!a.facingRight && b.facingRight) && (a.position.compareTo(b.position) > 0);
     }
